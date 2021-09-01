@@ -45,6 +45,19 @@ def printMenu():
     print("7- Mostrar nueva exposición")
     print("0- Salir")
 
+
+def initCatalog():
+    """
+    Inicializa el catalogo de obras y artistas 
+    """
+    return controller.initCatalog()
+
+def loadData(catalog):
+    """""
+    Carga obras en la estructura de datos
+    """
+    controller.loadData(catalog)
+
 catalog = None
 
 """
@@ -54,7 +67,23 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
+        print("Cargando información de los archivos ....\n")
+        catalog = initCatalog()
+        loadData(catalog)
+        sizeArtist = lt.size(catalog['artists'])
+        sizeArtworks = lt.size(catalog['artworks'])
+
+        print('Artistas cargados: ' + str(sizeArtist) + '\n')
+        print( str(lt.getElement(catalog["artists"],sizeArtist-2)) + '\n' 
+        + str(lt.getElement(catalog["artists"],sizeArtist-1)) + '\n'
+        +str(lt.getElement(catalog["artists"],sizeArtist))+ '\n')
+
+        print('Obras cargadas: ' + str(sizeArtworks) + '\n')
+        print( str(lt.getElement(catalog["artworks"],sizeArtworks-2)) + '\n' 
+        + str(lt.getElement(catalog["artworks"],sizeArtworks-1)) + '\n'
+        +str(lt.getElement(catalog["artworks"],sizeArtworks))+ '\n')
+
+
 
     elif int(inputs[0]) == 2:
         a_inicial = input("Año inicial: ")
