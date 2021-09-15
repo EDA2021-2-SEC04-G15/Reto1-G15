@@ -37,8 +37,8 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- Mostrar lista de artistas de una época")
-    print("3- Mostrar lista de adquisiciones de una época")
+    print("2- Seleccionar tipo de ordenamiento")
+    print("3- Prueba ordenamiento")
     print("4- Mostrar obras de artista según tecnica")
     print("5- Mostrar obras según nacionalidad")
     print("6- Calcular costo de transporte de obras según departamento")
@@ -46,11 +46,11 @@ def printMenu():
     print("0- Salir")
 
 
-def initCatalog():
+def initCatalog(tipo_lista):
     """
     Inicializa el catalogo de obras y artistas 
     """
-    return controller.initCatalog()
+    return controller.initCatalog(tipo_lista)
 
 def loadData(catalog):
     """""
@@ -58,7 +58,10 @@ def loadData(catalog):
     """
     controller.loadData(catalog)
 
+
 catalog = None
+
+typesort = None
 
 """
 Menu principal
@@ -67,35 +70,51 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
+        tipo_lista = int(input('Seleccione tipo de lista: \n 1. ARRAY_LIST \n 2. LINKED_LIST \n tipo de lista: '))
         print("Cargando información de los archivos ....\n")
-        catalog = initCatalog()
+        catalog = initCatalog(tipo_lista)
         loadData(catalog)
         sizeArtist = lt.size(catalog['artists'])
         sizeArtworks = lt.size(catalog['artworks'])
 
         print('Artistas cargados: ' + str(sizeArtist) + '\n')
-        print( str(lt.getElement(catalog["artists"],sizeArtist-2)) + '\n' 
-        + str(lt.getElement(catalog["artists"],sizeArtist-1)) + '\n'
-        +str(lt.getElement(catalog["artists"],sizeArtist))+ '\n')
+    
 
         print('Obras cargadas: ' + str(sizeArtworks) + '\n')
-        print( str(lt.getElement(catalog["artworks"],sizeArtworks-2)) + '\n' 
-        + str(lt.getElement(catalog["artworks"],sizeArtworks-1)) + '\n'
-        +str(lt.getElement(catalog["artworks"],sizeArtworks))+ '\n')
+
 
 
 
     elif int(inputs[0]) == 2:
-        a_inicial = input("Año inicial: ")
-        a_final = input("Año final: ")
-        print("...")
-        pass
+        
+        #tipo de sort
+
+        typeint = int(input("Tipo de sort a utilizar: \n 1. Insertion \n 2. Shell \n 3. Merge \n 4. Quick Sort \n tipo de sort:"))
+        
+        if typeint == 1:
+            typesort = 1
+        elif typeint ==2:
+            typesort = 2
+        elif typeint ==3:
+            typesort = 3
+        elif typeint ==4:
+            typesort = 4
+
 
     elif int(inputs[0]) == 3:
-        f_inicial = input("Fecha inicial (AAAA-MM-DD): ")
-        f_final = input("Fecha final (AAAA-MM-DD): ")
-        print("...")
-        pass
+
+        #longitud sub-lista
+
+        size = input("tamaño de muestra a ordenar: ")
+
+        if int(size) > lt.size(catalog['artworks']):
+            size =  lt.size(catalog['artworks'])
+
+        result = controller.sortArtworks(catalog, int(size),typesort)
+        print("Para la muestra de", size, " elementos, el tiempo (mseg) es: ",
+                                          str(result[0]))
+
+
 
     elif int(inputs[0]) == 4:
         nombre_artista = input("Nombre del artista: ")

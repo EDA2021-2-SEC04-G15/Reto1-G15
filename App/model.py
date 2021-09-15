@@ -26,8 +26,13 @@
 
 
 import config as cf
+import time
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import insertionsort as ins
+from DISClib.Algorithms.Sorting import mergesort as ms
+from DISClib.Algorithms.Sorting import quicksort as qs
+
 assert cf
 
 """
@@ -37,7 +42,7 @@ los mismos.
 
 # Construccion de modelos
 
-def newCatalog():
+def newCatalog(tipo_lista):
     """
     Inicializa el catálogo de obrs y artistar. Crea una lista vacia para guardar
     todos  Retorna el catalogo inicializado.
@@ -45,8 +50,12 @@ def newCatalog():
     catalog = {'artists': None,
                'artworks': None}
 
-    catalog['artists'] = lt.newList('ARRAY_LIST')
-    catalog['artworks'] = lt.newList('ARRAY_LIST')
+    if tipo_lista == 1:
+        catalog['artists'] = lt.newList('ARRAY_LIST')
+        catalog['artworks'] = lt.newList('ARRAY_LIST')
+    elif tipo_lista ==2:
+        catalog['artists'] = lt.newList('LINKED_LIST')
+        catalog['artworks'] = lt.newList('LINKED_LIST')
 
     return catalog
 
@@ -67,4 +76,53 @@ def addArtwork(catalog, artwork):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
+def cmpArtworkByDateAcquired(artwork1 , artwork2):
+    date1 = artwork1['DateAcquired'].split('-')
+    date2 = artwork2['DateAcquired'].split('-')
+
+    if date1 == [""]:
+        date1=["0000","00","00"]
+    if date2 == [""]:
+        date2=["0000","00","00"]
+
+    resultado = True
+
+    if date1[0] > date2[0]:
+        resultado = False
+    elif date1[0] == date2[0]:
+        if date1[1] > date2[1]:
+            resultado = False
+        elif date1[1] == date2[1]:
+            if date1[2] > date2[2]:
+                resultado = False
+    
+    return(resultado)
+
+
 # Funciones de ordenamiento
+
+def sortArtworks(catalog, size, typesort):
+    sub_list = lt.subList(catalog['artworks'], 1, size)
+    sub_list = sub_list.copy()
+    
+    if typesort == 1:
+        start_time = time.process_time()
+        sorted_list = ins.sort(sub_list, cmpArtworkByDateAcquired)
+        stop_time = time.process_time()
+    elif typesort ==2:
+        start_time = time.process_time()
+        sorted_list = sa.sort(sub_list, cmpArtworkByDateAcquired)
+        stop_time = time.process_time()
+    elif typesort ==3:
+        start_time = time.process_time()
+        sorted_list = ms.sort(sub_list, cmpArtworkByDateAcquired)
+        stop_time = time.process_time()
+    elif typesort ==4:
+        start_time = time.process_time()
+        sorted_list = qs.sort(sub_list, cmpArtworkByDateAcquired)
+        stop_time = time.process_time()
+
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    return elapsed_time_mseg, sorted_list
+
+
