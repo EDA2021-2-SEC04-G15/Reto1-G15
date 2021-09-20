@@ -74,7 +74,25 @@ def addArtwork(catalog, artwork):
 
 # Funciones de consulta
 
+def getArtistsInDateRange (catalog, year1, year2):
+    """"
+    Retorna lista desordenada de artistas en un rango de años
+    """
+    artists = catalog["artists"]
+    artistsInRange= lt.newList(datastructure= "ARRAY_LIST")
+    for artist in lt.iterator(artists):
+        if int(artist["BeginDate"]) >= year1 and int(artist["BeginDate"]) <= year2:
+            lt.addLast(artistsInRange, artist)
+    return artistsInRange
+
+
+
 # Funciones utilizadas para comparar elementos dentro de una lista
+
+def cmpArtistsByBeginDate (artist1, artist2):
+
+    result = int(artist1["BeginDate"]) < int(artist2["BeginDate"])
+    return result
 
 def cmpArtworkByDateAcquired(artwork1 , artwork2):
     date1 = artwork1['DateAcquired'].split('-')
@@ -100,6 +118,17 @@ def cmpArtworkByDateAcquired(artwork1 , artwork2):
 
 
 # Funciones de ordenamiento
+
+def sortArtists (artistsInRange):
+    sub_list = lt.subList(artistsInRange, 1, lt.size(artistsInRange))
+    sub_list = sub_list.copy()
+    start_time = time.process_time()
+    sorted_list = ms.sort(sub_list, cmpArtistsByBeginDate)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    return elapsed_time_mseg, sorted_list
+
+
 
 def sortArtworks(catalog, size, typesort):
     sub_list = lt.subList(catalog['artworks'], 1, size)

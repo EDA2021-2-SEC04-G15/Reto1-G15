@@ -40,10 +40,10 @@ operación solicitada
 """
 
 def printMenu():
-    print("Bienvenido")
+    print("\nBienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- Seleccionar tipo de ordenamiento")
-    print("3- Prueba ordenamiento")
+    print("2- Listar artistas en un rango de fechas")
+    print("3- Listar adquisiciones en un rango de fechas")
     print("4- Mostrar obras de artista según tecnica")
     print("5- Mostrar obras según nacionalidad")
     print("6- Calcular costo de transporte de obras según departamento")
@@ -64,9 +64,41 @@ def loadData(catalog):
     controller.loadData(catalog)
 
 
-catalog = None
 
-typesort = None
+
+def printArtistSortResults(ord_artists):
+
+    cantidad = lt.size(ord_artists)
+    print('\nSe encontraron ' + str(cantidad) + ' artistsas en el rango ingresado')
+    
+    print("\nLos primeros 3 artistas en el rango son: ")
+
+    i=1
+    while i in range(1,4):
+        artist = lt.getElement(ord_artists,i)
+        print('\nNombre: ' + artist['DisplayName'] +
+         ', Año de nacimiento: ' + artist['BeginDate'] +
+          ', Año de fallecimiento: ' + artist['EndDate'] +
+           ', Nacionalidad: ' + artist['Nationality'] +
+            ', Genero: ' + artist['Gender'] )
+        i+=1
+
+    print("\nLos ultimos 3 artistas en el rango son: ")
+
+    k=3
+    while k in range(1,4):
+        pos = int(lt.size(ord_artists))- k
+        artist = lt.getElement(ord_artists, pos)
+        print('\nNombre: ' + artist['DisplayName'] +
+         ', Año de nacimiento: ' + artist['BeginDate'] +
+          ', Año de fallecimiento: ' + artist['EndDate'] +
+           ', Nacionalidad: ' + artist['Nationality'] +
+            ', Genero: ' + artist['Gender'] )
+        k-=1
+
+    
+
+catalog = None
 
 """
 Menu principal
@@ -75,8 +107,8 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        tipo_lista = int(input('Seleccione tipo de lista: \n 1. ARRAY_LIST \n 2. LINKED_LIST \n tipo de lista: '))
-        print("Cargando información de los archivos ....\n")
+        tipo_lista = int(input('\nSeleccione tipo de lista: \n1. ARRAY_LIST \n2. LINKED_LIST \ntipo de lista: '))
+        print("\nCargando información de los archivos ....\n")
         catalog = initCatalog(tipo_lista)
         loadData(catalog)
         sizeArtist = lt.size(catalog['artists'])
@@ -92,18 +124,16 @@ while True:
 
     elif int(inputs[0]) == 2:
         
-        #tipo de sort
+        fecha1 = int(input('Año inicial de busqueda: '))
+        fecha2 = int(input('Año final de busqueda: '))
+        size = lt.size(catalog['artists'])
 
-        typeint = int(input("Tipo de sort a utilizar: \n 1. Insertion \n 2. Shell \n 3. Merge \n 4. Quick Sort \n tipo de sort:"))
+        result = controller.sortArtistsByBeginDate(catalog, fecha1, fecha2)
+        print("\nPara la muestra de", size, " artistas, el tiempo (mseg) es: ", str(result[0]))
+        printArtistSortResults(result[1])
+
         
-        if typeint == 1:
-            typesort = 1
-        elif typeint ==2:
-            typesort = 2
-        elif typeint ==3:
-            typesort = 3
-        elif typeint ==4:
-            typesort = 4
+
 
 
     elif int(inputs[0]) == 3:
@@ -116,7 +146,7 @@ while True:
             size =  lt.size(catalog['artworks'])
 
         result = controller.sortArtworks(catalog, int(size),typesort)
-        print("Para la muestra de", size, " elementos, el tiempo (mseg) es: ",
+        print("\nPara la muestra de", size, " elementos, el tiempo (mseg) es: ",
                                           str(result[0]))
 
 

@@ -72,6 +72,12 @@ def loadArtworks(catalog):
 
 # Funciones de ordenamiento
 
+def sortArtistsByBeginDate(catalog, year1, year2):
+    
+    artistsInRange = model.getArtistsInDateRange(catalog, year1, year2)
+    sortedResult = model.sortArtists(artistsInRange)
+    return sortedResult
+
 def sortArtworks(catalog, size, typesort):
     return model.sortArtworks(catalog, size, typesort)
 
