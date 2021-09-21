@@ -64,7 +64,56 @@ def loadData(catalog):
     controller.loadData(catalog)
 
 
+def printArtworksSortResults(ord_artworks):
 
+    cantidad = lt.size(ord_artworks)
+    print('\nSe encontraron ' + str(cantidad) + ' obras en el rango ingresado')
+
+    
+    print("\nLas primeras 3 obras en el rango son: ")
+
+    i=1
+    while i in range(1,4):
+        artwork = lt.getElement(ord_artworks,i)
+        constituents = artwork["ConstituentID"]
+        artistas = controller.searchArtistByID(catalog, constituents)
+        cantidad_artistas = lt.size(artistas)
+        
+        print('\nTitulo: ' + artwork['Title'] + ' \n\nArtistas: ')
+
+        for num in range(0,cantidad_artistas):
+            artista = lt.getElement(artistas, num + 1)
+            print(str(artista))
+        
+        print('\nFecha: ' + artwork['Date'] +
+           ', Fecha adquisición: ' + artwork['DateAcquired'] +
+            ', Medio: ' + artwork['Medium'] +
+            ' , Dimensiones: ' + artwork['Dimensions'] )
+        i+=1
+    
+    print("\nLas últimas 3 obras en el rango son: ")
+
+    k=2
+    while k in range(0,3):
+        pos = int(lt.size(ord_artworks))- k
+        artwork = lt.getElement(ord_artworks,pos)
+
+        constituents = artwork["ConstituentID"]
+        artistas = controller.searchArtistByID(catalog, constituents)
+        cantidad_artistas = lt.size(artistas)
+        
+        print('\nTitulo: ' + artwork['Title'] + ' \n\nArtistas: ')
+
+        for num in range(0,cantidad_artistas):
+            artista = lt.getElement(artistas, num + 1)
+            print(str(artista))
+        
+        print('\nFecha: ' + artwork['Date'] +
+           ', Fecha adquisición: ' + artwork['DateAcquired'] +
+            ', Medio: ' + artwork['Medium'] +
+            ' , Dimensiones: ' + artwork['Dimensions'] )
+        
+        k-=1
 
 def printArtistSortResults(ord_artists):
 
@@ -85,8 +134,8 @@ def printArtistSortResults(ord_artists):
 
     print("\nLos ultimos 3 artistas en el rango son: ")
 
-    k=3
-    while k in range(1,4):
+    k=2
+    while k in range(0,3):
         pos = int(lt.size(ord_artists))- k
         artist = lt.getElement(ord_artists, pos)
         print('\nNombre: ' + artist['DisplayName'] +
@@ -138,17 +187,18 @@ while True:
 
     elif int(inputs[0]) == 3:
 
-        #longitud sub-lista
+        fecha1 = input('Fecha inicial de busqueda (AAAA-MM-DD): ')
+        est_fecha1 = {'DateAcquired':fecha1}
+        print(est_fecha1)
+        fecha2 = input('Fecha final de busqueda (AAAA-MM-DD): ')
+        est_fecha2 = {'DateAcquired': fecha2}
+        print(est_fecha2)
+        size = lt.size(catalog['artworks'])
 
-        size = input("tamaño de muestra a ordenar: ")
-
-        if int(size) > lt.size(catalog['artworks']):
-            size =  lt.size(catalog['artworks'])
-
-        result = controller.sortArtworks(catalog, int(size),typesort)
-        print("\nPara la muestra de", size, " elementos, el tiempo (mseg) es: ",
-                                          str(result[0]))
-
+        result = controller.sortArtworksByBeginDate(catalog, est_fecha1, est_fecha2)
+        print("\nPara la muestra de", size, " obras, el tiempo (mseg) es: ", str(result[0][0]))
+        print("\nSe encontraron " + str(result[1]) + " obras compradas en el rango")
+        printArtworksSortResults(result[0][1])
 
 
     elif int(inputs[0]) == 4:

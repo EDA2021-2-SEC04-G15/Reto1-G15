@@ -85,6 +85,41 @@ def getArtistsInDateRange (catalog, year1, year2):
             lt.addLast(artistsInRange, artist)
     return artistsInRange
 
+def getArtworksInDateRange (catalog, year1, year2):
+    """"
+    Retorna lista desordenada de artworks en un rango de fechas utilizando el comparador cmpArtwork
+    """
+    artworks = catalog["artworks"]
+    artworksInRange= lt.newList(datastructure= "ARRAY_LIST")
+    for artwork in lt.iterator(artworks):
+        if (cmpArtworkByDateAcquired(artwork,year2)) and not (cmpArtworkByDateAcquired(artwork, year1)):
+            lt.addLast(artworksInRange, artwork)
+    return artworksInRange
+
+def purchasedAmount (artworksInRange):
+
+    k = 0
+    t = "purchase"
+    for artwork in lt.iterator(artworksInRange):
+       posible = artwork["CreditLine"].lower()
+       if t in posible:
+           k+=1
+    return k
+
+def searchArtistByID(catalog, constituentids):
+
+    artists = catalog['artists']
+    ID_list = constituentids.strip("[]").split(", ")
+    artists_names=lt.newList('ARRAY_LIST')
+    for id in ID_list:
+        corte = 0
+        while corte == 0:
+            for artist in lt.iterator(artists):
+                if artist["ConstituentID"] == id:
+                    lt.addLast(artists_names,artist['DisplayName'])
+                    corte = 1
+
+    return artists_names
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
@@ -95,6 +130,9 @@ def cmpArtistsByBeginDate (artist1, artist2):
     return result
 
 def cmpArtworkByDateAcquired(artwork1 , artwork2):
+
+    # Devuelve True si el 'DateAcquired' de artwork1 es menor que el de artwork2
+
     date1 = artwork1['DateAcquired'].split('-')
     date2 = artwork2['DateAcquired'].split('-')
 
@@ -130,27 +168,12 @@ def sortArtists (artistsInRange):
 
 
 
-def sortArtworks(catalog, size, typesort):
-    sub_list = lt.subList(catalog['artworks'], 1, size)
+def sortArtworks(artworksInRange):
+    sub_list = lt.subList(artworksInRange, 1, lt.size(artworksInRange))
     sub_list = sub_list.copy()
-    
-    if typesort == 1:
-        start_time = time.process_time()
-        sorted_list = ins.sort(sub_list, cmpArtworkByDateAcquired)
-        stop_time = time.process_time()
-    elif typesort ==2:
-        start_time = time.process_time()
-        sorted_list = sa.sort(sub_list, cmpArtworkByDateAcquired)
-        stop_time = time.process_time()
-    elif typesort ==3:
-        start_time = time.process_time()
-        sorted_list = ms.sort(sub_list, cmpArtworkByDateAcquired)
-        stop_time = time.process_time()
-    elif typesort ==4:
-        start_time = time.process_time()
-        sorted_list = qs.sort(sub_list, cmpArtworkByDateAcquired)
-        stop_time = time.process_time()
-
+    start_time = time.process_time()
+    sorted_list = ms.sort(sub_list, cmpArtworkByDateAcquired)
+    stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
     return elapsed_time_mseg, sorted_list
 
