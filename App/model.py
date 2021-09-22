@@ -42,7 +42,7 @@ los mismos.
 
 # Construccion de modelos
 
-def newCatalog(tipo_lista):
+def newCatalog():
     """
     Inicializa el catálogo de obrs y artistar. Crea una lista vacia para guardar
     todos  Retorna el catalogo inicializado.
@@ -51,13 +51,9 @@ def newCatalog(tipo_lista):
                'artworks': None,
                'nationalities': None}
 
-    if tipo_lista == 1:
-        catalog['artists'] = lt.newList('ARRAY_LIST')
-        catalog['artworks'] = lt.newList('ARRAY_LIST')
-    elif tipo_lista ==2:
-        catalog['artists'] = lt.newList('LINKED_LIST')
-        catalog['artworks'] = lt.newList('LINKED_LIST')
-
+    
+    catalog['artists'] = lt.newList('ARRAY_LIST')
+    catalog['artworks'] = lt.newList('ARRAY_LIST')
     catalog['nationalities'] = lt.newList('ARRAY_LIST')
 
     return catalog
@@ -132,6 +128,74 @@ def getArtistsInDateRange (catalog, year1, year2):
             lt.addLast(artistsInRange, artist)
     return artistsInRange
 
+def getArtworksInDeparment(catalog, department):
+    """
+    Retorna lista desordenada de artworks en un departamento en específico
+    Agrega el costo de transporte a una nueva categoria dentro del artwork
+    Retorna costo total, numero de obras, y peso estimado
+    """
+    artworks = catalog['artworks']
+    artworksInDept = lt.newList(datastructure="ARRAY_LIST")
+    costo_total = 0
+    peso_total = 0
+    obras = 0
+    for artwork in lt.iterator(artworks):
+        if artwork['Department'] == department:
+            lt.addLast(artworksInDept,artwork)
+            artwork['cost'] = getTansportCost(artwork)
+            costo = artwork['cost']
+            costo_total += costo
+            try:
+                peso = float(artwork['Weight (kg)'])
+            except:
+                peso = 0
+            peso_total+= peso
+            obras+=1
+
+    costo_total = costo_total.__round__(2)
+    peso_total = peso_total.__round__(2)
+
+    return artworksInDept, obras, costo_total, peso_total
+
+
+def getTansportCost(artwork):
+    weight = artwork['Weight (kg)']
+    width = artwork['Width (cm)']
+    height = artwork['Height (cm)']
+    depth = artwork['Depth (cm)']
+
+    posibles_costos =[]
+    costo_final = 0
+
+    if weight == "":
+        weight = "0"
+    if width == "":
+        width = "0"
+    if height == "":
+        height = "0"
+    if depth == "":
+        depth = "0"
+
+    r1 = float(weight)*72
+    r2 = (float(width)/100)*(float(height)/100)*(float(depth)/100)*72
+    r3 = (float(width)/100)*(float(height)/100)*72
+    r4 = (float(width)/100)*(float(depth)/100)*72
+    r5 = (float(height)/100)*(float(depth)/100)*72
+
+    posibles_costos.append(r1)
+    posibles_costos.append(r2)
+    posibles_costos.append(r3)
+    posibles_costos.append(r4)
+    posibles_costos.append(r5)
+    posibles_costos.sort()
+
+    if posibles_costos[4] != 0:
+        costo_final = posibles_costos[4]
+    else:
+        costo_final = 48.0
+
+    return costo_final
+
 def getArtworksInDateRange (catalog, year1, year2):
     """"
     Retorna lista desordenada de artworks en un rango de fechas utilizando el comparador cmpArtwork
@@ -187,6 +251,27 @@ def ArtistByID_v2(catalog, constituentids):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
+def cmpArtworkByTransportCost(artwork1, artwork2):
+    cost1 = artwork1['cost']
+    cost2 = artwork2['cost']
+    result = cost1 > cost2
+    return result
+
+def cmpArtworkByDate(artwork1, artwork2):
+    
+    try:
+        date1= int(artwork1['Date'])
+    except:
+        date1 = 3000
+    
+    try:
+        date2= int(artwork2['Date'])
+    except:
+        date2 = 3000
+
+    result = date1 < date2
+    return result
+
 def cmpCountryByArtworksStored(country1, country2):
 
     result = country1['size'] > country2['size']
@@ -235,6 +320,23 @@ def sortArtists (artistsInRange):
     elapsed_time_mseg = (stop_time - start_time)*1000
     return elapsed_time_mseg, sorted_list
 
+def sortArtworksInDeptByDate(artworksInDept):
+    sub_list = lt.subList(artworksInDept, 1, lt.size(artworksInDept))
+    sub_list = sub_list.copy()
+    start_time = time.process_time()
+    sorted_list = ms.sort(sub_list, cmpArtworkByDate)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    return elapsed_time_mseg, sorted_list
+
+def sortArtworksInDeptByTransportCost(artworksInDept):
+    sub_list = lt.subList(artworksInDept, 1, lt.size(artworksInDept))
+    sub_list = sub_list.copy()
+    start_time = time.process_time()
+    sorted_list = ms.sort(sub_list, cmpArtworkByTransportCost)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    return elapsed_time_mseg, sorted_list
 
 
 def sortArtworks(artworksInRange):

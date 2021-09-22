@@ -51,11 +51,11 @@ def printMenu():
     print("0- Salir")
 
 
-def initCatalog(tipo_lista):
+def initCatalog():
     """
     Inicializa el catalogo de obras y artistas 
     """
-    return controller.initCatalog(tipo_lista)
+    return controller.initCatalog()
 
 def loadData(catalog):
     """""
@@ -79,7 +79,7 @@ def printArtworksSortResults(ord_artworks):
         artistas = controller.searchArtistByID(catalog, constituents)
         cantidad_artistas = lt.size(artistas)
         
-        print('\nTitulo: ' + artwork['Title'] + ' \n\nArtistas: ')
+        print('\n###########\nTitulo: ' + artwork['Title'] + ' \n\nArtistas: ')
 
         for num in range(0,cantidad_artistas):
             artista = lt.getElement(artistas, num + 1)
@@ -91,7 +91,7 @@ def printArtworksSortResults(ord_artworks):
             ' , Dimensiones: ' + artwork['Dimensions'] )
         i+=1
     
-    print("\nLas últimas 3 obras en el rango son: ")
+    print("\n###############\n\nLas últimas 3 obras en el rango son: ")
 
     k=2
     while k in range(0,3):
@@ -102,7 +102,7 @@ def printArtworksSortResults(ord_artworks):
         artistas = controller.searchArtistByID(catalog, constituents)
         cantidad_artistas = lt.size(artistas)
         
-        print('\nTitulo: ' + artwork['Title'] + ' \n\nArtistas: ')
+        print('\n#############\nTitulo: ' + artwork['Title'] + ' \n\nArtistas: ')
 
         for num in range(0,cantidad_artistas):
             artista = lt.getElement(artistas, num + 1)
@@ -174,6 +174,54 @@ def printCountriesSortResult(ord_countries):
             ', Medio: ' + obra['Medium'] +
             ' , Dimensiones: ' + obra['Dimensions'] )
 
+def printSortedDateResult(sorted_date):
+    print("\n Las 5 obras mas antiguas a transportar son: ")
+
+    lista_dates = sorted_date[1]
+
+    i=1
+    while i in range(1,6):
+        artwork = lt.getElement(lista_dates,i)
+        constituents = artwork["ConstituentID"]
+        artistas = controller.searchArtistByID(catalog, constituents)
+        cantidad_artistas = lt.size(artistas)
+        
+        print('\n############\nTitulo: ' + artwork['Title'] + ' \n\nArtistas: ')
+
+        for num in range(0,cantidad_artistas):
+            artista = lt.getElement(artistas, num + 1)
+            print(str(artista))
+        
+        print('\nFecha: ' + artwork['Date'] +
+            ', Medio: ' + artwork['Medium'] +
+            ' , Dimensiones: ' + artwork['Dimensions'] +
+            ' , Costo de transporte: ' + str((artwork['cost']).__round__(2)))
+        i+=1
+    
+    
+def printSortedCostResult(sorted_cost):
+    print("\n#########\n\nLas 5 obras mas costosas a transportar son: ")
+
+    lista_cost = sorted_cost[1]
+
+    i=1
+    while i in range(1,6):
+        artwork = lt.getElement(lista_cost,i)
+        constituents = artwork["ConstituentID"]
+        artistas = controller.searchArtistByID(catalog, constituents)
+        cantidad_artistas = lt.size(artistas)
+        
+        print('\n############\nTitulo: ' + artwork['Title'] + ' \n\nArtistas: ')
+
+        for num in range(0,cantidad_artistas):
+            artista = lt.getElement(artistas, num + 1)
+            print(str(artista))
+        
+        print('\nFecha: ' + artwork['Date'] +
+            ', Medio: ' + artwork['Medium'] +
+            ' , Dimensiones: ' + artwork['Dimensions'] +
+            ' , Costo de transporte: ' + str((artwork['cost']).__round__(2)))
+        i+=1
 
 catalog = None
 
@@ -184,9 +232,8 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        tipo_lista = int(input('\nSeleccione tipo de lista: \n1. ARRAY_LIST \n2. LINKED_LIST \ntipo de lista: '))
         print("\nCargando información de los archivos ....\n")
-        catalog = initCatalog(tipo_lista)
+        catalog = initCatalog()
         loadData(catalog)
         sizeArtist = lt.size(catalog['artists'])
         sizeArtworks = lt.size(catalog['artworks'])
@@ -195,9 +242,6 @@ while True:
     
 
         print('Obras cargadas: ' + str(sizeArtworks) + '\n')
-
-
-
 
     elif int(inputs[0]) == 2:
         
@@ -208,10 +252,6 @@ while True:
         result = controller.sortArtistsByBeginDate(catalog, fecha1, fecha2)
         print("\nPara la muestra de", size, " artistas, el tiempo (mseg) es: ", str(result[0]))
         printArtistSortResults(result[1])
-
-        
-
-
 
     elif int(inputs[0]) == 3:
 
@@ -226,7 +266,6 @@ while True:
         print("\nSe encontraron " + str(result[1]) + " obras compradas en el rango")
         printArtworksSortResults(result[0][1])
 
-
     elif int(inputs[0]) == 4:
         nombre_artista = input("Nombre del artista: ")
         print("...")
@@ -240,12 +279,20 @@ while True:
         print("\n Para una muestra de", size, "paises, el tiempo (mseg) es: ", str(result[0]))
         printCountriesSortResult(result[1])
 
-
     elif int(inputs[0]) == 6:
-        departamento = input("Departamento: ")
-        print("...")
-        pass
 
+        departament = input("Departamento: ")
+        result = controller.sortArtworksByDeparment(catalog, departament)
+        result_totales = result[0]
+        sorted_date = result[1]
+        sorted_cost = result[2]
+        print("\nSe require transportar " + str(result_totales[1]) +
+         " obras provenientes del departamento de " + departament)
+        print("Se estima que realizar esto tendra un costo total de: " + str(result_totales[2]) +" USD")
+        print("Se estima que el peso total de artefactos es de: " + str(result_totales[3]) + " KG")
+        printSortedDateResult(sorted_date)
+        printSortedCostResult(sorted_cost)
+    
     elif int(inputs[0]) == 7:
         a_inicial = input("Año inicial de las obras: ")
         a_final = input("Año final de las obras: ")

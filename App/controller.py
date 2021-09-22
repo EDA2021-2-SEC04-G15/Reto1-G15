@@ -31,11 +31,11 @@ El controlador se encarga de mediar entre la vista y el modelo.
 
 # Inicialización del Catálogo de obras y artistas
 
-def initCatalog(tipo_lista):
+def initCatalog():
     """""
     Llama la función de inicialización del catalogo del modelo.
     """
-    catalog = model.newCatalog(tipo_lista)
+    catalog = model.newCatalog()
     return catalog
 
 
@@ -90,6 +90,14 @@ def sortCountries(catalog):
     countries = catalog['nationalities']
     sortedResult = model.sortCountries(countries)
     return sortedResult
+
+def sortArtworksByDeparment(catalog, department):
+
+    artowrksInDeptResult = model.getArtworksInDeparment(catalog, department)
+    artworksInDept = artowrksInDeptResult[0]
+    sortedResultByDate = model.sortArtworksInDeptByDate(artworksInDept)
+    sortedResultByTransportCost = model.sortArtworksInDeptByTransportCost(artworksInDept)
+    return artowrksInDeptResult, sortedResultByDate, sortedResultByTransportCost
 
 
 # Funciones de consulta sobre el catálogo
