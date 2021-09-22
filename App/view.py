@@ -146,6 +146,34 @@ def printArtistSortResults(ord_artists):
         k-=1
 
     
+def printCountriesSortResult(ord_countries):
+
+    print("\nLos 10 paises con mas obras en el MoMa son: ")
+
+    for nationality in lt.iterator(ord_countries):
+        print("\n" + nationality['name'] + " : " + str(nationality['size']))
+
+    pais = lt.getElement(ord_countries, 1)
+    print("las primeras y utlimas 3 obras de la lista de obras nacionalidad: " + pais["name"]+ ", son: ")
+    obras = pais['artworks']
+    size = pais['size']
+    for pos in [1,2,3,size-2,size-1,size]:
+        obra = lt.getElement(obras, pos)
+        constituents = obra["ConstituentID"]
+        artistas = controller.searchArtistByID(catalog, constituents)
+        cantidad_artistas = lt.size(artistas)
+
+        print('\n############\nTitulo: ' + obra['Title'] + ' \n\nArtistas: ')
+
+        for num in range(0,cantidad_artistas):
+            artista = lt.getElement(artistas, num + 1)
+            print(str(artista))
+        
+        print('\nFecha: ' + obra['Date'] +
+           ', Fecha adquisición: ' + obra['DateAcquired'] +
+            ', Medio: ' + obra['Medium'] +
+            ' , Dimensiones: ' + obra['Dimensions'] )
+
 
 catalog = None
 
@@ -189,10 +217,8 @@ while True:
 
         fecha1 = input('Fecha inicial de busqueda (AAAA-MM-DD): ')
         est_fecha1 = {'DateAcquired':fecha1}
-        print(est_fecha1)
         fecha2 = input('Fecha final de busqueda (AAAA-MM-DD): ')
         est_fecha2 = {'DateAcquired': fecha2}
-        print(est_fecha2)
         size = lt.size(catalog['artworks'])
 
         result = controller.sortArtworksByBeginDate(catalog, est_fecha1, est_fecha2)
@@ -207,8 +233,13 @@ while True:
         pass
 
     elif int(inputs[0]) == 5:
-        print("...")
-        pass
+        
+        size = lt.size(catalog['nationalities'])
+
+        result = controller.sortCountries(catalog)
+        print("\n Para una muestra de", size, "paises, el tiempo (mseg) es: ", str(result[0]))
+        printCountriesSortResult(result[1])
+
 
     elif int(inputs[0]) == 6:
         departamento = input("Departamento: ")

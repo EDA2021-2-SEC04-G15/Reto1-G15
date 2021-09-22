@@ -48,7 +48,8 @@ def newCatalog(tipo_lista):
     todos  Retorna el catalogo inicializado.
     """
     catalog = {'artists': None,
-               'artworks': None}
+               'artworks': None,
+               'nationalities': None}
 
     if tipo_lista == 1:
         catalog['artists'] = lt.newList('ARRAY_LIST')
@@ -56,6 +57,8 @@ def newCatalog(tipo_lista):
     elif tipo_lista ==2:
         catalog['artists'] = lt.newList('LINKED_LIST')
         catalog['artworks'] = lt.newList('LINKED_LIST')
+
+    catalog['nationalities'] = lt.newList('ARRAY_LIST')
 
     return catalog
 
@@ -68,9 +71,53 @@ def addArtist(catalog, artist):
 def addArtwork(catalog, artwork):
     # Se agrega una obra a la lista de obras
     lt.addLast(catalog['artworks'], artwork)
+    # se añaden los detalles de la obra a la lista de nacionalidades
+    addArtworkNationlities(catalog, artwork)
+
+
+def addArtworkNationlities(catalog, artwork):
+
+    constituentids = artwork['ConstituentID']
+    artists = ArtistByID_v2(catalog, constituentids)
+
+    for artist in lt.iterator(artists):
+        addNationality(catalog, artwork, artist)
+
 
 
 # Funciones para creacion de datos
+
+def addNationality(catalog, artwork, artist):
+    nationality = artist['Nationality']
+    if nationality == "":
+        nationality = "Nationality unknown"
+    nationalities = catalog['nationalities']
+    encontro = False
+    for country in lt.iterator(nationalities):
+        compare = country['name']
+        if compare == nationality:
+            lt.addLast(country['artworks'], artwork)
+            country['size'] +=1
+            encontro = True
+    
+    if encontro == False:
+        country2 = newNationlity(nationality)
+        artworks2 = country2['artworks']
+        lt.addLast(artworks2, artwork)
+        country2['size'] +=1
+        encontro = True
+        lt.addLast(nationalities, country2)
+
+
+def newNationlity(nationality):
+    """
+    Crea una nueva estructura para almacenar las obras de una nacionalidad
+    """
+    country = {'name': "", "artworks": None, "size" : 0 }
+    country['name'] = nationality
+    country['artworks'] = lt.newList('ARRAY_LIST')
+    return country
+
 
 # Funciones de consulta
 
@@ -121,8 +168,29 @@ def searchArtistByID(catalog, constituentids):
 
     return artists_names
 
+def ArtistByID_v2(catalog, constituentids):
+
+    artists = catalog['artists']
+    ID_list = constituentids.strip("[]").split(", ")
+    result = lt.newList('ARRAY_LIST')
+    number_artists = len(ID_list)
+    corte = 0
+    for artist in lt.iterator(artists):
+        if artist['ConstituentID'] in ID_list:
+            lt.addLast(result,artist)
+            corte+=1
+        if corte == number_artists:
+            break
+    
+    return result
+                
 
 # Funciones utilizadas para comparar elementos dentro de una lista
+
+def cmpCountryByArtworksStored(country1, country2):
+
+    result = country1['size'] > country2['size']
+    return result
 
 def cmpArtistsByBeginDate (artist1, artist2):
 
@@ -131,7 +199,8 @@ def cmpArtistsByBeginDate (artist1, artist2):
 
 def cmpArtworkByDateAcquired(artwork1 , artwork2):
 
-    # Devuelve True si el 'DateAcquired' de artwork1 es menor que el de artwork2
+                ### Devuelve True si el 'DateAcquired' de 
+                # artwork1 es menor que el de artwork2
 
     date1 = artwork1['DateAcquired'].split('-')
     date2 = artwork2['DateAcquired'].split('-')
@@ -177,4 +246,12 @@ def sortArtworks(artworksInRange):
     elapsed_time_mseg = (stop_time - start_time)*1000
     return elapsed_time_mseg, sorted_list
 
-
+def sortCountries(countries):
+    sub_list = lt.subList(countries, 1, lt.size(countries))
+    sub_list = sub_list.copy()
+    start_time = time.process_time()
+    sorted_list = ms.sort(sub_list, cmpCountryByArtworksStored)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    top10sorted = lt.subList(sorted_list, 1, 10)
+    return elapsed_time_mseg, top10sorted
