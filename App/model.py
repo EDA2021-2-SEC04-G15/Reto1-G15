@@ -248,6 +248,13 @@ def ArtistByID_v2(catalog, constituentids):
     
     return result
                 
+def getArtworksByTechnique(catalog, technique):
+    artworks = catalog['artworks']
+    techniqueList = technique.strip("[]").split(", ")
+    artworksNames = lt.newList('ARRAY_LIST')
+    numberArtworks = len(techniqueList)
+    
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -308,6 +315,10 @@ def cmpArtworkByDateAcquired(artwork1 , artwork2):
     
     return(resultado)
 
+def cmpArtworksByTechnique(technique1, technique2):
+    result = technique1['Medium'] > technique2['Medium']
+    return result
+
 
 # Funciones de ordenamiento
 
@@ -353,6 +364,16 @@ def sortCountries(countries):
     sub_list = sub_list.copy()
     start_time = time.process_time()
     sorted_list = ms.sort(sub_list, cmpCountryByArtworksStored)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    top10sorted = lt.subList(sorted_list, 1, 10)
+    return elapsed_time_mseg, top10sorted
+
+def sortArtworksByTechnique(artworksByTech):
+    sub_list = lt.subList(artworksByTech, 1, lt.size(artworksByTech))
+    sub_list = sub_list.copy()
+    start_time = time.process_time()
+    sorted_list = ms.sort(sub_list, cmpArtworksByTechnique)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
     top10sorted = lt.subList(sorted_list, 1, 10)

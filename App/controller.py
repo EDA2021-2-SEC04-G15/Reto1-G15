@@ -99,6 +99,9 @@ def sortArtworksByDeparment(catalog, department):
     sortedResultByTransportCost = model.sortArtworksInDeptByTransportCost(artworksInDept)
     return artowrksInDeptResult, sortedResultByDate, sortedResultByTransportCost
 
+def sortArtworksByTechnique(catalog, technique):
+    artworksByTechResult = model.getArtworksByTechnique
+
 
 # Funciones de consulta sobre el catálogo
 

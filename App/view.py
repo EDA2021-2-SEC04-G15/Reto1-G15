@@ -225,6 +225,26 @@ def printSortedCostResult(sorted_cost):
 
 catalog = None
 
+def printArworksByTechniqueResult(ordArtworks):
+    print("Las obras que se han realizado con esta tecnica son: ")
+
+    listaObras = ordArtworks[1]
+    artwork = lt.getElement(listaObras)
+    constituents = artwork["ConstituentID"]
+    obras =controller.searchArtistByID(catalog, constituents)
+    cantidadArtistas = lt.size(obras)
+    for num in range (0,cantidadArtistas):
+        obra = lt.getElement(obras, num)
+        print(str(obras))
+
+
+    print (' Medio: ' + artwork['Medium'] +
+            ', Dimensiones: ' + artwork['Dimensions'])
+    
+
+
+
+
 """
 Menu principal
 """
@@ -268,8 +288,15 @@ while True:
 
     elif int(inputs[0]) == 4:
         nombre_artista = input("Nombre del artista: ")
-        print("...")
-        pass
+        size = lt.size(catalog['artists'])
+        result = controller.sortArtworksByTechnique(catalog)
+        print("\nEl total de obras de este artista son: " + str(result[1]))
+        print("\nEl total de tecnicas utilizadas han sido: " + str(result[2]))
+        print("\nLa tecnica más utilizada ha sido: " + str(result[3]))
+        printArworksByTechniqueResult(result[4])
+
+
+        
 
     elif int(inputs[0]) == 5:
         
