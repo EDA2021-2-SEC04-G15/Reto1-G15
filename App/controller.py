@@ -84,6 +84,7 @@ def sortArtworksByBeginDate(catalog, year1, year2):
     purchasedAmount = model.purchasedAmount(artworksInRange)
     sortedResult = model.sortArtworks(artworksInRange)
     return sortedResult,purchasedAmount
+    
 
 def sortCountries(catalog):
 
