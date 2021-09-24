@@ -254,7 +254,7 @@ def getArtworksByTechnique(catalog, technique):
     artworksNames = lt.newList('ARRAY_LIST')
     numberArtworks = len(techniqueList)
     
-
+ 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
